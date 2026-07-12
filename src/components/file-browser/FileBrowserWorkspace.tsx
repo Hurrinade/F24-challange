@@ -76,12 +76,12 @@ export default function FileBrowserWorkspace() {
   });
   const isSearchActive = submittedSearchPrefix.length > 0;
   const searchResults = useQuery(
-    api.queries.entries.searchFilesByPrefix,
+    api.queries.entries.searchFilesByExactName,
     isSearchActive
       ? {
           scope: searchScope,
           parentId: currentFolderId,
-          prefix: submittedSearchPrefix,
+          name: submittedSearchPrefix,
         }
       : "skip",
   );

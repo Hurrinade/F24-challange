@@ -57,8 +57,7 @@ export default function FileBrowserEntryList({
           <div className="space-y-2">
             <h2 className="text-sm font-medium">No matching files</h2>
             <p className="text-sm text-muted-foreground">
-              No files start with {searchTerm ? `"${searchTerm}"` : "that text"}
-              .
+              No files are named {searchTerm ? `"${searchTerm}"` : "that"}.
             </p>
           </div>
         </div>
@@ -100,7 +99,7 @@ export default function FileBrowserEntryList({
     <div className="min-h-0 flex-1 overflow-y-auto">
       {variant === "search" && (
         <div className="border-b border-border px-6 py-2 text-sm text-muted-foreground">
-          Files starting with {searchTerm ? `"${searchTerm}"` : "search text"}
+          Files named {searchTerm ? `"${searchTerm}"` : "search text"}
         </div>
       )}
       <div className="divide-y divide-border border-y border-border">

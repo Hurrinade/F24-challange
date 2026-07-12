@@ -3,9 +3,10 @@
 File Browser is a small unauthenticated Dropbox-style file browser built with
 React, TypeScript, Vite, Convex, Tailwind CSS, and shadcn UI.
 
-Users can create nested folders, upload PDF or plain-text files, browse folders,
-delete files or folder trees permanently, and search uploaded files by filename
-prefix.
+Users can create nested folders, create files by uploading real PDF or
+plain-text files, browse folders, delete files or folder trees permanently,
+search files by exact filename, and get filename-prefix suggestions while
+typing.
 
 ## Prerequisites
 
@@ -117,7 +118,8 @@ virtual and is never stored as an entry.
 ## File behavior
 
 - Folder creation validates names and rejects invalid or duplicate siblings.
-- File upload accepts only `application/pdf` and `text/plain`.
+- File creation is handled through real uploads. Upload accepts only
+  `application/pdf` and `text/plain`.
 - Empty folders show a visible drop zone.
 - Non-empty folders still accept drag-and-drop across the workspace.
 - Deleting a folder deletes its descendants.
@@ -136,15 +138,16 @@ To test uploads:
 3. Create or open a folder.
 4. Drag files from `sample-upload-files/` into the folder drop zone, or use the
    upload button and select the sample `.txt` files.
-5. Search for prefixes such as `file-0`, `file-1`, or `file-` to verify
-   suggestions and submitted prefix search.
+5. Type prefixes such as `file-0`, `file-1`, or `file-` to verify top-10
+   suggestions.
+6. Submit an exact file name such as `file-01.txt` to verify exact-name search.
 
 ## Search behavior
 
 Search targets file names only. Folder-name search is out of scope.
 
 - Suggestions search by filename prefix and return up to 10 files.
-- Submitted search returns all files that start with the submitted prefix.
+- Submitted search returns files with the exact submitted filename.
 - Scope can be the current folder or all files.
 - Current-folder scope searches direct files only, not descendants.
 - Suggestions are debounced and skipped while the popover is closed or the input

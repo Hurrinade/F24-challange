@@ -110,6 +110,34 @@ async function searchFilesByNormalizedPrefix(
   return limit === undefined ? await query.collect() : await query.take(limit);
 }
 
+async function searchFilesByNormalizedName(
+  ctx: QueryCtx,
+  scope: "folder" | "all",
+  parentId: Id<"entries"> | null,
+  normalizedName: string,
+) {
+  if (scope === "folder") {
+    await validateParentFolder(ctx, parentId);
+
+    return await ctx.db
+      .query("entries")
+      .withIndex("by_parent_kind_normalized_name", (q) =>
+        q
+          .eq("parentId", parentId)
+          .eq("kind", "file")
+          .eq("normalizedName", normalizedName),
+      )
+      .collect();
+  }
+
+  return await ctx.db
+    .query("entries")
+    .withIndex("by_kind_normalized_name", (q) =>
+      q.eq("kind", "file").eq("normalizedName", normalizedName),
+    )
+    .collect();
+}
+
 export const listChildren = query({
   args: {
     parentId: entryParentIdValidator,
@@ -197,6 +225,30 @@ export const searchFilesByPrefix = query({
       args.parentId,
       normalizedPrefix,
       args.limit,
+    );
+
+    return await withBreadcrumb(ctx, files);
+  },
+});
+
+export const searchFilesByExactName = query({
+  args: {
+    scope: v.union(v.literal("folder"), v.literal("all")),
+    parentId: entryParentIdValidator,
+    name: v.string(),
+  },
+  handler: async (ctx, args) => {
+    const normalizedName = args.name.trim().toLowerCase();
+
+    if (!normalizedName) {
+      return [];
+    }
+
+    const files = await searchFilesByNormalizedName(
+      ctx,
+      args.scope,
+      args.parentId,
+      normalizedName,
     );
 
     return await withBreadcrumb(ctx, files);
