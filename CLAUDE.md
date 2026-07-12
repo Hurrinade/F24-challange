@@ -3,6 +3,8 @@
 ## Project overview
 
 This is a small unauthenticated browser-based file system built with React and Convex.
+Users can create folders, upload PDF/text files, delete entries, and search
+files by filename prefix.
 
 ## Commands
 

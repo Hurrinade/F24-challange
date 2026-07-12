@@ -1,68 +1,104 @@
 # File Browser
 
-File Browser is a small, unauthenticated Dropbox-style file system built with
+File Browser is a small unauthenticated Dropbox-style file browser built with
 React, TypeScript, Vite, Convex, Tailwind CSS, and shadcn UI.
 
-PR 1 provides the desktop application shell. File and folder persistence,
-browsing, deletion, and search will be added in later PRs.
+Users can create nested folders, upload PDF or plain-text files, browse folders,
+delete files or folder trees permanently, and search uploaded files by filename
+prefix.
 
-## Current interface
+## Prerequisites
 
-- `/` renders the File Browser workspace.
-- The left folder sidebar starts at 20% width and can be resized between 15% and
-  35%.
-- The main file area uses the remaining width.
-- The existing light, dark, and system theme preferences remain available.
-- There are no accounts, sessions, protected routes, or user-specific data.
+- Node.js 20 or newer.
+- npm.
+- A Convex project.
+- A static frontend host for production, such as Vercel, Netlify, Cloudflare
+  Pages, or any static server with SPA fallback support.
 
-## Setup
-
-1. Install dependencies:
+Install dependencies:
 
 ```bash
 npm install
 ```
 
-2. Create `.env.local` from `.env.example` and set:
+## Environment setup
+
+Create `.env.local` from `.env.example`:
 
 ```dotenv
 VITE_CONVEX_URL=https://your-deployment.convex.cloud
+CONVEX_DEPLOYMENT=dev:your-project-name
 ```
 
-`CONVEX_DEPLOYMENT` is optional and is only used by Convex tooling.
+- `VITE_CONVEX_URL` is required by the browser app.
+- `CONVEX_DEPLOYMENT` is optional and used by Convex tooling.
 
-3. Run the frontend in debug mode when developing locally:
+## Debug-mode development
+
+Run Vite in another terminal:
 
 ```bash
 npm run dev
 ```
 
-## Quality commands
+The application routes are:
+
+- `/` for the virtual root folder.
+- `/folders/:folderId` for a selected folder.
+- `?selectedFile=<entryId>` is used only to highlight a file after search
+  navigation.
+
+## Quality checks and build
 
 ```bash
 npm run lint
-npm run lint:fix
 npm run typecheck
-npm run format
 npm run format:check
 npm run check
 npm run build
 ```
 
-`npm run check` is non-mutating. It runs ESLint, TypeScript, and Prettier in
-check mode.
+`npm run check` is non-mutating and runs lint, typecheck, and Prettier check.
+No automated test files are currently included.
 
-## Project structure
+## Convex data model
 
-- Route pages live in `src/pages`; `/` remains `src/pages/Root.tsx`.
-- Feature components live under matching folders in `src/components`.
-- Shared hooks, stores, utilities, components, and types are exposed through
-  their root barrel files when needed.
-- Convex schema and server functions live in `convex`.
-- Project imports use the `@/` alias.
+Convex is the only persistence layer. Files use Convex File Storage for content
+and the `entries` table for metadata.
 
-## Current scope
+`entries` stores:
 
-This PR intentionally contains no database schema or file-system behavior. The
-ignored local `plan.md` documents the later PR sequence for CRUD, navigation,
-search, delivery documentation, and optional Docker support.
+- `name` and `normalizedName`
+- `kind: "folder" | "file"`
+- `parentId`, where `null` means the virtual root
+- optional file upload metadata: `storageId`, `mimeType`, and `size`
+
+Sibling names are unique case-insensitively across files and folders. Root is
+virtual and is never stored as an entry.
+
+## File behavior
+
+- Folder creation validates names and rejects invalid or duplicate siblings.
+- File upload accepts only `application/pdf` and `text/plain`.
+- Empty folders show a visible drop zone.
+- Non-empty folders still accept drag-and-drop across the workspace.
+- Deleting a folder deletes its descendants.
+- Deleting a file also deletes its Convex storage object through the entry
+  trigger.
+
+## Search behavior
+
+Search targets file names only. Folder-name search is out of scope.
+
+- Suggestions search by filename prefix and return up to 10 files.
+- Submitted search returns all files that start with the submitted prefix.
+- Scope can be the current folder or all files.
+- Current-folder scope searches direct files only, not descendants.
+- Suggestions are debounced and skipped while the popover is closed or the input
+  is empty.
+
+## Known exclusions
+
+This challenge-scale app intentionally does not include authentication, users,
+ownership, permissions, sessions, sharing, quotas, trash/restore, rename, move,
+file versioning, mobile-specific layout work
