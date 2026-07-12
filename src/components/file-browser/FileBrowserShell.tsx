@@ -12,13 +12,13 @@ export default function FileBrowserShell() {
     <main className="h-svh w-full overflow-hidden bg-background text-foreground">
       <SidebarProvider className="min-h-0 h-full">
         <ResizablePanelGroup orientation="horizontal">
-          <ResizablePanel defaultSize="20%" minSize="15%" maxSize="35%">
+          <ResizablePanel defaultSize="25%" minSize="15%" maxSize="35%">
             <FileBrowserSidebar />
           </ResizablePanel>
 
           <ResizableHandle withHandle />
 
-          <ResizablePanel defaultSize="80%" minSize="65%">
+          <ResizablePanel defaultSize="75%" minSize="65%">
             <FileBrowserWorkspace />
           </ResizablePanel>
         </ResizablePanelGroup>
