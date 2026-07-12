@@ -11,7 +11,7 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "typecheck": "tsc -b -noEmit",
-    "check": "npm run lint && npm run typecheck && npm run format:check",
+    "check": "npm run lint && npm run typecheck && npm run format",
     "preview": "vite preview",
     "prepare": "husky"
   },
