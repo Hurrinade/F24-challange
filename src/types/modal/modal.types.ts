@@ -1,3 +1,5 @@
+import type { CreateEntryModalPayload } from "@/types/file-browser/file-browser.types";
+
 export type ConfirmVariant = "danger" | "primary" | "secondary";
 
 export type ConfirmModalPayload = {
@@ -12,6 +14,7 @@ export type ConfirmModalPayload = {
 
 export type ModalPayloadMap = {
   confirm: ConfirmModalPayload;
+  createFolder: CreateEntryModalPayload;
 };
 
 export type ModalKey = keyof ModalPayloadMap;

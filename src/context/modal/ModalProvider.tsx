@@ -1,4 +1,5 @@
 import { useCallback, useMemo, useState } from "react";
+import CreateEntryModal from "@/components/modals/file-browser/CreateEntryModal";
 import ConfirmationModal from "@/components/modals/shared-modals/ConfirmationModal";
 import { useModal } from "@/hooks/modals/use-modal";
 import { ModalContext } from "@/context/modal/modal-context";
@@ -28,6 +29,16 @@ const modalRegistry: ModalRegistry = {
       />
     ),
   },
+  createFolder: {
+    getInstanceKey: () => "createFolder",
+    render: ({ open, onOpenChange, payload }) => (
+      <CreateEntryModal
+        open={open}
+        onOpenChange={onOpenChange}
+        payload={payload}
+      />
+    ),
+  },
 };
 
 export function ModalProvider({ children }: { children: React.ReactNode }) {
@@ -35,7 +46,7 @@ export function ModalProvider({ children }: { children: React.ReactNode }) {
 
   const openModal = useCallback(
     <K extends ModalKey>(key: K, payload: ModalPayloadMap[K]) => {
-      setActiveModal({ key, payload });
+      setActiveModal({ key, payload } as ActiveModal);
     },
     [],
   );
