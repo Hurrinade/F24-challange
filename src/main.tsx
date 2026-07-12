@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ConvexReactClient, ConvexProvider } from "convex/react";
 import { envConfig } from "@/config/env";
 import { ModalProvider } from "@/context/modal/ModalProvider";
+import { TooltipProvider } from "@/components/ui/tooltip";
 import App from "@/App.tsx";
 import "@/index.css";
 
@@ -19,9 +20,11 @@ async function startApp() {
       <ConvexProvider client={convex}>
         <QueryClientProvider client={queryClient}>
           <BrowserRouter>
-            <ModalProvider>
-              <App />
-            </ModalProvider>
+            <TooltipProvider>
+              <ModalProvider>
+                <App />
+              </ModalProvider>
+            </TooltipProvider>
           </BrowserRouter>
         </QueryClientProvider>
       </ConvexProvider>
