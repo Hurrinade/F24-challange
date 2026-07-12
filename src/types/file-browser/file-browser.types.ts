@@ -24,6 +24,14 @@ export type CreateEntryModalPayload = {
 
 export type AcceptedUploadMimeType = "application/pdf" | "text/plain";
 
+export type SearchScope = "folder" | "all";
+
+export type FileSearchResult = EntryListItem & {
+  breadcrumb: string;
+};
+
+export type FileSearchSuggestion = FileSearchResult;
+
 export type FileBrowserBreadcrumbItem = {
   entryId: Id<"entries"> | null;
   name: string;

@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { useParams } from "react-router";
+import { useNavigate, useParams, useSearchParams } from "react-router";
 import { useConvex, useMutation, useQuery } from "convex/react";
 import { FolderPlus, Upload } from "lucide-react";
 import { toast } from "sonner";
@@ -7,12 +7,18 @@ import { api } from "@convex/_generated/api";
 import { ThemeToggle } from "@/components";
 import FileBrowserBreadcrumbs from "@/components/file-browser/FileBrowserBreadcrumbs";
 import FileBrowserEntryList from "@/components/file-browser/FileBrowserEntryList";
+import FileBrowserSearch from "@/components/file-browser/FileBrowserSearch";
 import { Button } from "@/components/ui/button";
 import { useModal } from "@/hooks/modals/use-modal";
 import { cn } from "@/lib/utils";
 import { ROOT_FOLDER_ENTRIES_KEY, useFileBrowserStore } from "@/stores";
 import type { Id } from "@convex/_generated/dataModel";
-import type { AcceptedUploadMimeType, EntryListItem } from "@/types";
+import type {
+  AcceptedUploadMimeType,
+  EntryListItem,
+  FileSearchSuggestion,
+  SearchScope,
+} from "@/types";
 
 const acceptedUploadMimeTypes: AcceptedUploadMimeType[] = [
   "application/pdf",
@@ -43,21 +49,41 @@ function getUploadResponse(value: { storageId: Id<"_storage"> } | undefined): {
   throw new Error("Upload response is invalid.");
 }
 
+function getFolderPath(parentId: Id<"entries"> | null) {
+  return parentId == null ? "/" : `/folders/${parentId}`;
+}
+
 export default function FileBrowserWorkspace() {
   const { folderId } = useParams<{ folderId?: string }>();
   const currentFolderId = (folderId ?? null) as Id<"entries"> | null;
+  const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
   const { openModal } = useModal();
   const convex = useConvex();
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const dragDepthRef = useRef(0);
   const [isDragActive, setIsDragActive] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
+  const [searchValue, setSearchValue] = useState("");
+  const [searchScope, setSearchScope] = useState<SearchScope>("folder");
+  const [submittedSearchPrefix, setSubmittedSearchPrefix] = useState("");
   const breadcrumbs = useQuery(api.queries.entries.getBreadcrumbs, {
     folderId: currentFolderId,
   });
   const entries = useQuery(api.queries.entries.listChildren, {
     parentId: currentFolderId,
   });
+  const isSearchActive = submittedSearchPrefix.length > 0;
+  const searchResults = useQuery(
+    api.queries.entries.searchFilesByPrefix,
+    isSearchActive
+      ? {
+          scope: searchScope,
+          parentId: currentFolderId,
+          prefix: submittedSearchPrefix,
+        }
+      : "skip",
+  );
   const currentFolderKey = currentFolderId ?? ROOT_FOLDER_ENTRIES_KEY;
   const cachedEntries = useFileBrowserStore(
     (state) => state.entriesByFolderId[currentFolderKey],
@@ -80,7 +106,10 @@ export default function FileBrowserWorkspace() {
 
   const visibleBreadcrumbs = breadcrumbs ?? cachedBreadcrumbs;
   const currentFolderName = visibleBreadcrumbs?.at(-1)?.name ?? "";
-  const visibleEntries = entries ?? cachedEntries;
+  const visibleEntries = isSearchActive
+    ? searchResults
+    : (entries ?? cachedEntries);
+  const selectedFileId = searchParams.get("selectedFile");
 
   // Cache entries in store for better UX
   useEffect(() => {
@@ -213,6 +242,30 @@ export default function FileBrowserWorkspace() {
     fileInputRef.current?.click();
   };
 
+  const selectFile = (file: FileSearchSuggestion) => {
+    const nextSearchParams = new URLSearchParams({
+      selectedFile: file._id,
+    });
+
+    setSearchValue("");
+    setSubmittedSearchPrefix("");
+    navigate(`${getFolderPath(file.parentId)}?${nextSearchParams.toString()}`);
+  };
+
+  const submitSearch = (value: string) => {
+    const trimmedValue = value.trim();
+
+    setSearchParams({});
+    setSubmittedSearchPrefix(trimmedValue);
+    setSearchValue(trimmedValue);
+  };
+
+  const clearSearch = () => {
+    setSearchValue("");
+    setSubmittedSearchPrefix("");
+    setSearchParams({});
+  };
+
   const openFile = async (entry: EntryListItem) => {
     if (!entry.storageId) {
       toast.error("This file has no uploaded content.");
@@ -316,6 +369,24 @@ export default function FileBrowserWorkspace() {
         </div>
 
         <div className="flex shrink-0 items-center gap-2">
+          <FileBrowserSearch
+            currentFolderId={currentFolderId}
+            searchValue={searchValue}
+            searchScope={searchScope}
+            isSearchActive={isSearchActive}
+            onSearchValueChange={(value) => {
+              setSearchValue(value);
+
+              if (!value.trim()) {
+                setSubmittedSearchPrefix("");
+                setSearchParams({});
+              }
+            }}
+            onSearchScopeChange={setSearchScope}
+            onSearchSubmit={submitSearch}
+            onSearchClear={clearSearch}
+            onSelectFile={selectFile}
+          />
           <Button
             type="button"
             variant="outline"
@@ -346,6 +417,9 @@ export default function FileBrowserWorkspace() {
         onUploadClick={openUploadPicker}
         isDragActive={isDragActive}
         isUploading={isUploading}
+        selectedFileId={selectedFileId}
+        variant={isSearchActive ? "search" : "browse"}
+        searchTerm={submittedSearchPrefix}
       />
     </section>
   );
