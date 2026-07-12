@@ -124,6 +124,21 @@ virtual and is never stored as an entry.
 - Deleting a file also deletes its Convex storage object through the entry
   trigger.
 
+## Sample upload files
+
+The repository includes `sample-upload-files/` with 15 small `.txt` files for
+manual upload and search testing.
+
+To test uploads:
+
+1. Start the app with `npm run dev` or `docker compose up --build`.
+2. Open `http://localhost:5173`.
+3. Create or open a folder.
+4. Drag files from `sample-upload-files/` into the folder drop zone, or use the
+   upload button and select the sample `.txt` files.
+5. Search for prefixes such as `file-0`, `file-1`, or `file-` to verify
+   suggestions and submitted prefix search.
+
 ## Search behavior
 
 Search targets file names only. Folder-name search is out of scope.
@@ -148,7 +163,7 @@ Deploy the generated `dist` directory to a static host.
 The production frontend environment must include:
 
 ```dotenv
-VITE_CONVEX_URL=https://enduring-cardinal-769.eu-west-1.convex.site
+VITE_CONVEX_URL=https://enduring-cardinal-769.eu-west-1.convex.cloud
 ```
 
 Configure the host with SPA fallback so unknown routes serve `index.html`. This
