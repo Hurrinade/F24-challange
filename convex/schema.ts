@@ -7,6 +7,9 @@ export default defineSchema({
     normalizedName: v.string(), // Stored for indexing
     kind: v.union(v.literal("folder"), v.literal("file")),
     parentId: v.union(v.id("entries"), v.null()),
+    storageId: v.optional(v.id("_storage")),
+    mimeType: v.optional(v.string()),
+    size: v.optional(v.number()),
   })
     .index("by_parent_normalized_name", ["parentId", "normalizedName"])
     .index("by_parent_kind_normalized_name", [

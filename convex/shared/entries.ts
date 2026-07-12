@@ -14,6 +14,9 @@ export type EntryInput = {
   normalizedName: string;
   kind: EntryKind;
   parentId: Id<"entries"> | null;
+  storageId?: Id<"_storage">;
+  mimeType?: string;
+  size?: number;
 };
 
 export function normalizeEntryName(name: string) {

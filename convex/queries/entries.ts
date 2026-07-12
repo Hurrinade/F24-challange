@@ -85,3 +85,26 @@ export const getBreadcrumbs = query({
     ];
   },
 });
+
+export const getFileUrl = query({
+  args: {
+    entryId: v.id("entries"),
+  },
+  handler: async (ctx, args) => {
+    const entry = await ctx.db.get(args.entryId);
+
+    if (!entry) {
+      throw new Error("File not found.");
+    }
+
+    if (entry.kind !== "file") {
+      throw new Error("Entry is not a file.");
+    }
+
+    if (!entry.storageId) {
+      throw new Error("File has no uploaded content.");
+    }
+
+    return await ctx.storage.getUrl(entry.storageId);
+  },
+});

@@ -8,6 +8,10 @@ entryTriggers.register("entries", async (ctx, change) => {
     return;
   }
 
+  if (change.oldDoc.kind === "file" && change.oldDoc.storageId) {
+    await ctx.storage.delete(change.oldDoc.storageId);
+  }
+
   const children = await ctx.db
     .query("entries")
     .withIndex("by_parent", (q) => q.eq("parentId", change.id))

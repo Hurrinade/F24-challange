@@ -15,6 +15,7 @@ import type { Id } from "../_generated/dataModel";
 import type { MutationCtx } from "../_generated/server";
 
 const mutation = customMutation(rawMutation, customCtx(entryTriggers.wrapDB));
+const acceptedFileMimeTypes = new Set(["application/pdf", "text/plain"]);
 
 async function assertUniqueSiblingName(
   ctx: MutationCtx,
@@ -58,13 +59,47 @@ export const createFile = mutation({
   args: {
     parentId: entryParentIdValidator,
     name: v.string(),
+    storageId: v.id("_storage"),
+    mimeType: v.string(),
+    size: v.number(),
   },
   handler: async (ctx, args) => {
-    return await createEntry(ctx, {
-      ...normalizeEntryName(args.name),
-      kind: "file",
-      parentId: args.parentId,
-    });
+    let didCreateEntry = false;
+
+    try {
+      if (!acceptedFileMimeTypes.has(args.mimeType)) {
+        throw new Error("Only PDF and text files are supported.");
+      }
+
+      if (args.size < 0) {
+        throw new Error("File size is invalid.");
+      }
+
+      const entryId = await createEntry(ctx, {
+        ...normalizeEntryName(args.name),
+        kind: "file",
+        parentId: args.parentId,
+        storageId: args.storageId,
+        mimeType: args.mimeType,
+        size: args.size,
+      });
+
+      didCreateEntry = true;
+
+      return entryId;
+    } finally {
+      // Safety delete in case the entry was not created successfully. This prevents orphaned storage objects.
+      if (!didCreateEntry) {
+        await ctx.storage.delete(args.storageId);
+      }
+    }
+  },
+});
+
+export const generateUploadUrl = mutation({
+  args: {},
+  handler: async (ctx) => {
+    return await ctx.storage.generateUploadUrl();
   },
 });
 
