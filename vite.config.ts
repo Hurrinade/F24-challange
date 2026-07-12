@@ -18,10 +18,10 @@ export default defineConfig({
         "apple-touch-icon.png",
       ],
       manifest: {
-        name: "React Template",
-        short_name: "Template",
+        name: "File Browser",
+        short_name: "Files",
         description:
-          "Reusable React, Vite, Convex, and shadcn template for future company projects.",
+          "A small browser-based file and folder management application.",
         theme_color: "#f6f1e8",
         background_color: "#f6f1e8",
         display: "standalone",

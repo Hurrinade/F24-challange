@@ -57,3 +57,6 @@ dist
 .env*.local
 
 certificates
+
+# Local implementation roadmap
+/plan.md
