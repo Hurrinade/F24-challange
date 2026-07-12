@@ -32,10 +32,6 @@ function FolderTreeIndent({ level }: { level: number }) {
   ));
 }
 
-function getFolderPath(folderId: Id<"entries">) {
-  return `/folders/${folderId}`;
-}
-
 function FolderNode({ folder, level, activeFolderIds }: FolderNodeProps) {
   const { folderId } = useParams<{ folderId?: string }>();
   const [isManuallyExpanded, setIsManuallyExpanded] = useState(false);
@@ -72,7 +68,7 @@ function FolderNode({ folder, level, activeFolderIds }: FolderNodeProps) {
         </Button>
 
         <Link
-          to={getFolderPath(folder._id)}
+          to={`/folders/${folderId}`}
           className={cn(
             "flex min-w-0 flex-1 items-center gap-2 rounded-md px-2 py-1.5 text-sm text-muted-foreground outline-none hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:ring-2 focus-visible:ring-ring",
             isActive && "bg-sidebar-accent text-sidebar-accent-foreground",

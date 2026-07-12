@@ -66,12 +66,13 @@ export default function FileBrowserSearch({
     debouncedSearchPrefix.length > 0 &&
     debouncedSearchPrefix === normalizedSearchValue;
   const suggestions = useQuery(
-    api.queries.entries.suggestFilesByPrefix,
+    api.queries.entries.searchFilesByPrefix,
     shouldQuerySuggestions
       ? {
           scope: searchScope,
           parentId: currentFolderId,
           prefix: debouncedSearchPrefix,
+          limit: 10,
         }
       : "skip",
   );
@@ -145,10 +146,6 @@ export default function FileBrowserSearch({
               <SelectItem value="all">All files</SelectItem>
             </SelectContent>
           </Select>
-
-          <Button type="submit" variant="outline" disabled={!canSearch}>
-            Search
-          </Button>
         </form>
       </PopoverAnchor>
 

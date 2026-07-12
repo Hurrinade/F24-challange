@@ -12,10 +12,21 @@ type FileBrowserEntryListProps = {
   onUploadClick: () => void;
   isDragActive: boolean;
   isUploading: boolean;
+  selectedFileId?: string | null;
+  variant?: "browse" | "search";
+  searchTerm?: string;
 };
 
 function getFolderPath(entry: EntryListItem) {
   return `/folders/${entry._id}`;
+}
+
+function getEntrySubtitle(entry: EntryListItem) {
+  if ("breadcrumb" in entry) {
+    return entry.breadcrumb as string;
+  }
+
+  return entry.kind === "folder" ? entry.kind : (entry.mimeType ?? entry.kind);
 }
 
 export default function FileBrowserEntryList({
@@ -25,6 +36,9 @@ export default function FileBrowserEntryList({
   onUploadClick,
   isDragActive,
   isUploading,
+  selectedFileId,
+  variant = "browse",
+  searchTerm,
 }: FileBrowserEntryListProps) {
   const navigate = useNavigate();
 
@@ -37,6 +51,20 @@ export default function FileBrowserEntryList({
   }
 
   if (entries.length === 0) {
+    if (variant === "search") {
+      return (
+        <div className="flex min-h-0 flex-1 items-center justify-center p-6 text-center">
+          <div className="space-y-2">
+            <h2 className="text-sm font-medium">No matching files</h2>
+            <p className="text-sm text-muted-foreground">
+              No files start with {searchTerm ? `"${searchTerm}"` : "that text"}
+              .
+            </p>
+          </div>
+        </div>
+      );
+    }
+
     return (
       <div className="flex min-h-0 flex-1 items-center justify-center p-6">
         <div
@@ -70,10 +98,16 @@ export default function FileBrowserEntryList({
 
   return (
     <div className="min-h-0 flex-1 overflow-y-auto">
+      {variant === "search" && (
+        <div className="border-b border-border px-6 py-2 text-sm text-muted-foreground">
+          Files starting with {searchTerm ? `"${searchTerm}"` : "search text"}
+        </div>
+      )}
       <div className="divide-y divide-border border-y border-border">
         {entries.map((entry) => {
           const isFolder = entry.kind === "folder";
           const EntryIcon = isFolder ? Folder : FileText;
+          const isSelected = !isFolder && entry._id === selectedFileId;
 
           return (
             <div
@@ -81,6 +115,7 @@ export default function FileBrowserEntryList({
               className={cn(
                 "flex min-h-12 items-center gap-3 px-6 py-2 hover:bg-muted/50",
                 "cursor-pointer",
+                isSelected && "bg-primary/10 hover:bg-primary/10",
               )}
               onClick={() => {
                 if (isFolder) {
@@ -102,7 +137,7 @@ export default function FileBrowserEntryList({
               <div className="min-w-0 flex-1">
                 <p className="truncate text-sm font-medium">{entry.name}</p>
                 <p className="text-xs capitalize text-muted-foreground">
-                  {isFolder ? entry.kind : (entry.mimeType ?? entry.kind)}
+                  {getEntrySubtitle(entry)}
                 </p>
               </div>
 

@@ -10,6 +10,10 @@ import {
 import type { Doc, Id } from "../_generated/dataModel";
 import type { QueryCtx } from "../_generated/server";
 
+function getPrefixEnd(prefix: string) {
+  return `${prefix}\uffff`;
+}
+
 async function listEntriesByKind(
   ctx: QueryCtx,
   parentId: Id<"entries"> | null,
@@ -22,6 +26,88 @@ async function listEntriesByKind(
     )
     .order("asc")
     .collect();
+}
+
+async function getBreadcrumbItems(
+  ctx: QueryCtx,
+  folderId: Id<"entries"> | null,
+) {
+  const folders: Doc<"entries">[] = [];
+  let currentFolderId = folderId;
+
+  while (currentFolderId !== null) {
+    const folder = await getRequiredFolder(ctx, currentFolderId);
+
+    folders.push(folder);
+    currentFolderId = folder.parentId;
+  }
+
+  return [
+    {
+      entryId: null,
+      name: ROOT_BREADCRUMB_NAME,
+    },
+    ...folders.reverse().map((folder) => ({
+      entryId: folder._id,
+      name: folder.name,
+    })),
+  ];
+}
+
+function formatBreadcrumb(
+  breadcrumbs: Awaited<ReturnType<typeof getBreadcrumbItems>>,
+) {
+  return breadcrumbs.map((breadcrumb) => breadcrumb.name).join(" / ");
+}
+
+async function withBreadcrumb(ctx: QueryCtx, entries: Doc<"entries">[]) {
+  return await Promise.all(
+    entries.map(async (entry) => ({
+      ...entry,
+      breadcrumb: formatBreadcrumb(
+        await getBreadcrumbItems(ctx, entry.parentId),
+      ),
+    })),
+  );
+}
+
+async function searchFilesByNormalizedPrefix(
+  ctx: QueryCtx,
+  scope: "folder" | "all",
+  parentId: Id<"entries"> | null,
+  normalizedPrefix: string,
+  limit?: number,
+) {
+  if (scope === "folder") {
+    await validateParentFolder(ctx, parentId);
+
+    const query = ctx.db
+      .query("entries")
+      .withIndex("by_parent_kind_normalized_name", (q) =>
+        q
+          .eq("parentId", parentId)
+          .eq("kind", "file")
+          .gte("normalizedName", normalizedPrefix)
+          .lt("normalizedName", getPrefixEnd(normalizedPrefix)),
+      )
+      .order("asc");
+
+    return limit === undefined
+      ? await query.collect()
+      : await query.take(limit);
+  }
+
+  const query = ctx.db
+    .query("entries")
+    .withIndex("by_kind_normalized_name", (q) =>
+      q
+        .eq("kind", "file")
+        .gte("normalizedName", normalizedPrefix)
+        .lt("normalizedName", getPrefixEnd(normalizedPrefix)),
+    )
+    .order("asc");
+
+  return limit === undefined ? await query.collect() : await query.take(limit);
 }
 
 export const listChildren = query({
@@ -63,26 +149,7 @@ export const getBreadcrumbs = query({
     folderId: entryParentIdValidator,
   },
   handler: async (ctx, args) => {
-    const folders: Doc<"entries">[] = [];
-    let currentFolderId = args.folderId;
-
-    while (currentFolderId !== null) {
-      const folder = await getRequiredFolder(ctx, currentFolderId);
-
-      folders.push(folder);
-      currentFolderId = folder.parentId;
-    }
-
-    return [
-      {
-        entryId: null,
-        name: ROOT_BREADCRUMB_NAME,
-      },
-      ...folders.reverse().map((folder) => ({
-        entryId: folder._id,
-        name: folder.name,
-      })),
-    ];
+    return await getBreadcrumbItems(ctx, args.folderId);
   },
 });
 
@@ -106,5 +173,31 @@ export const getFileUrl = query({
     }
 
     return await ctx.storage.getUrl(entry.storageId);
+  },
+});
+
+export const searchFilesByPrefix = query({
+  args: {
+    scope: v.union(v.literal("folder"), v.literal("all")),
+    parentId: entryParentIdValidator,
+    prefix: v.string(),
+    limit: v.optional(v.number()),
+  },
+  handler: async (ctx, args) => {
+    const normalizedPrefix = args.prefix.trim().toLowerCase();
+
+    if (!normalizedPrefix) {
+      return [];
+    }
+
+    const files = await searchFilesByNormalizedPrefix(
+      ctx,
+      args.scope,
+      args.parentId,
+      normalizedPrefix,
+      args.limit,
+    );
+
+    return await withBreadcrumb(ctx, files);
   },
 });
