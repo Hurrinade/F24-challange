@@ -26,12 +26,11 @@ npm install
 Create `.env.local` from `.env.example`:
 
 ```dotenv
-VITE_CONVEX_URL=https://your-deployment.convex.cloud
-CONVEX_DEPLOYMENT=dev:your-project-name
+VITE_CONVEX_URL=https://enduring-cardinal-769.eu-west-1.convex.cloud
 ```
 
-- `VITE_CONVEX_URL` is required by the browser app.
-- `CONVEX_DEPLOYMENT` is optional and used by Convex tooling.
+`VITE_CONVEX_URL` is required by the browser app and points to the shared Convex
+deployment used for this interview project.
 
 ## Debug-mode development
 
@@ -60,6 +59,45 @@ npm run build
 
 `npm run check` is non-mutating and runs lint, typecheck, and Prettier check.
 No automated test files are currently included.
+
+## VS Code debugging
+
+The repository includes `.vscode/launch.json` with a Chrome launch profile named
+`Debug Vite app`.
+
+Start the debug tools first:
+
+```bash
+npm run dev
+```
+
+Then run the VS Code `Debug Vite app` profile. It opens
+`http://localhost:5173` and maps browser source files to `src`.
+
+## Optional Docker
+
+Docker is optional. Convex is not containerized; the Docker setup runs the Vite
+development server with the shared interview Convex deployment at
+`https://enduring-cardinal-769.eu-west-1.convex.cloud`.
+
+Build and run directly:
+
+```bash
+docker build -t file-browser .
+docker run --rm -p 5173:5173 -v "$PWD:/app" -v /app/node_modules file-browser
+```
+
+Or run with Docker Compose:
+
+```bash
+docker compose up --build
+```
+
+Open the containerized app at `http://localhost:5173`.
+
+The Dockerfile includes the shared interview Convex URL by default. The Compose
+service mounts the project into the container so local source edits are visible
+to Vite without rebuilding the image.
 
 ## Convex data model
 
@@ -97,8 +135,28 @@ Search targets file names only. Folder-name search is out of scope.
 - Suggestions are debounced and skipped while the popover is closed or the input
   is empty.
 
+## Production deployment
+
+Build the frontend:
+
+```bash
+npm run build
+```
+
+Deploy the generated `dist` directory to a static host.
+
+The production frontend environment must include:
+
+```dotenv
+VITE_CONVEX_URL=https://enduring-cardinal-769.eu-west-1.convex.site
+```
+
+Configure the host with SPA fallback so unknown routes serve `index.html`. This
+is required for `/folders/:folderId` to work on refresh.
+
 ## Known exclusions
 
 This challenge-scale app intentionally does not include authentication, users,
 ownership, permissions, sessions, sharing, quotas, trash/restore, rename, move,
-file versioning, mobile-specific layout work
+file versioning, mobile-specific layout work, or enterprise-scale background
+deletion jobs.

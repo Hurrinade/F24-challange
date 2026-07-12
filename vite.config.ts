@@ -49,4 +49,12 @@ export default defineConfig({
       "@convex": path.resolve(__dirname, "./convex"),
     },
   },
+  server: {
+    host: "0.0.0.0",
+    port: 5173,
+    strictPort: true,
+    watch: {
+      usePolling: true,
+    },
+  },
 });
