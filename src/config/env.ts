@@ -1,10 +1,6 @@
 import type { AppEnvConfig, RequiredEnvKey } from "@/types";
 
-const REQUIRED_ENV_KEYS: RequiredEnvKey[] = [
-  "VITE_CLERK_PUBLISHABLE_KEY",
-  "VITE_CONVEX_URL",
-  "VITE_CONVEX_SITE_URL",
-];
+const REQUIRED_ENV_KEYS: RequiredEnvKey[] = ["VITE_CONVEX_URL"];
 
 function getRequiredEnvValue(key: RequiredEnvKey): string {
   const value = import.meta.env[key];
@@ -23,7 +19,5 @@ for (const key of REQUIRED_ENV_KEYS) {
 }
 
 export const envConfig: AppEnvConfig = {
-  clerkPublishableKey: getRequiredEnvValue("VITE_CLERK_PUBLISHABLE_KEY"),
   convexUrl: getRequiredEnvValue("VITE_CONVEX_URL"),
-  convexSiteUrl: getRequiredEnvValue("VITE_CONVEX_SITE_URL"),
 };

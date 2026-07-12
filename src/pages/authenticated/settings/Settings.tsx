@@ -1,5 +1,3 @@
-import SettingsAccountSection from "@/components/settings/SettingsAccountSection";
-import SettingsDangerSection from "@/components/settings/SettingsDangerSection";
 import SettingsPrivacySection from "@/components/settings/SettingsPrivacySection";
 import SettingsThemeSection from "@/components/settings/SettingsThemeSection";
 
@@ -18,10 +16,8 @@ export default function Settings() {
           </p>
         </div>
 
-        <SettingsAccountSection />
         <SettingsThemeSection />
         <SettingsPrivacySection />
-        <SettingsDangerSection />
       </div>
     </main>
   );

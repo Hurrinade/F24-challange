@@ -1,12 +1,11 @@
 # React Vite Template
 
 This template is the starting point for future company projects built with
-React, Vite, Clerk, Convex, TanStack Query, Tailwind CSS 4, and shadcn UI.
+React, Vite, Convex, TanStack Query, Tailwind CSS 4, and shadcn UI.
 
 ## What is included
 
 - React 19 + Vite 8 + TypeScript 6
-- Clerk authentication
 - Convex client wiring
 - TanStack Query provider setup
 - Vite-native PWA baseline via `vite-plugin-pwa`
@@ -26,9 +25,7 @@ bun install
 
 Required frontend env keys:
 
-- `VITE_CLERK_PUBLISHABLE_KEY`: Clerk publishable key from the Clerk dashboard
 - `VITE_CONVEX_URL`: Convex client URL for the current deployment
-- `VITE_CONVEX_SITE_URL`: Public site URL used for auth/callback configuration
 
 Optional local workflow key:
 
@@ -111,7 +108,6 @@ Examples:
 
 ## Provider Pattern
 
-- `src/context/ConvexClerkProvider.tsx` is the canonical Convex + Clerk wrapper.
 - `src/main.tsx` should compose app-level providers using that wrapper instead of
   duplicating the Convex provider setup inline.
 
@@ -125,5 +121,3 @@ npx npm-check-updates
 npx npm-check-updates -u
 
 ```
-
-- need to setup google for production login with clerk

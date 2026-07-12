@@ -1,24 +1,9 @@
-import { Routes, Route, Navigate, Outlet } from "react-router";
+import { Routes, Route, Outlet } from "react-router";
 import { ThemeToggle } from "@/components";
 import Home from "@/pages/authenticated/home/Home";
 import Settings from "@/pages/authenticated/settings/Settings";
 import Root from "@/pages/Root";
 import Public from "@/pages/unauthenticated/public/Public";
-import { AuthLoading, useConvexAuth } from "convex/react";
-
-function ProtectedRoutes() {
-  const { isAuthenticated, isLoading } = useConvexAuth();
-
-  if (isLoading) {
-    return null;
-  }
-
-  if (!isAuthenticated) {
-    return <Navigate to="/" replace />;
-  }
-
-  return <Outlet />;
-}
 
 function App() {
   return (
@@ -30,15 +15,12 @@ function App() {
         <Routes>
           <Route path="/" element={<Root />} />
           <Route path="/public" element={<Public />} />
-          <Route element={<ProtectedRoutes />}>
+          <Route element={<Outlet />}>
             <Route path="/home" element={<Home />} />
             <Route path="/settings" element={<Settings />} />
           </Route>
         </Routes>
       </main>
-      <AuthLoading>
-        <p>Still loading</p>
-      </AuthLoading>
     </div>
   );
 }

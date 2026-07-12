@@ -1,4 +1,3 @@
-import { SignInButton, SignUpButton } from "@clerk/react";
 import { Link } from "react-router";
 import { Button } from "@/components/ui/button";
 
@@ -24,14 +23,6 @@ export default function Public() {
         </div>
 
         <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap">
-          <SignInButton mode="modal">
-            <Button>Sign in</Button>
-          </SignInButton>
-
-          <SignUpButton mode="modal">
-            <Button variant="outline">Create account</Button>
-          </SignUpButton>
-
           <Button variant="ghost" asChild>
             <Link to="/">Back to root</Link>
           </Button>

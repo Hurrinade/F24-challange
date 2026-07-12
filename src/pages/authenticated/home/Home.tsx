@@ -1,4 +1,3 @@
-import { SignOutButton } from "@clerk/react";
 import { Link } from "react-router";
 import { Button } from "@/components/ui/button";
 import { useHome } from "@/hooks/home/use-home";
@@ -32,12 +31,6 @@ export default function Home() {
         </Button>
 
         <div className="flex w-full flex-col gap-2 sm:flex-row sm:justify-center">
-          <SignOutButton>
-            <Button variant="outline" className="w-full sm:w-auto">
-              Log out
-            </Button>
-          </SignOutButton>
-
           <Button variant="ghost" asChild className="w-full sm:w-auto">
             <Link to="/public">Open public route example</Link>
           </Button>

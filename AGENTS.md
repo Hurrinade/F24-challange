@@ -18,23 +18,22 @@ bun run check        # Lint, typecheck and prettier check without mutating files
 
 ## Tech Stack (current versions)
 
-| Category         | Technology             | Version |
-| ---------------- | ---------------------- | ------- |
-| Framework        | React                  | 19      |
-| Language         | TypeScript             | ~6      |
-| Bundler          | Vite                   | 8       |
-| PWA              | vite-plugin-pwa        | 1       |
-| Routing          | React Router           | 7       |
-| Styling          | Tailwind CSS           | 4       |
-| UI Components    | shadcn (radix-nova)    | 4       |
-| Icons            | Lucide React           | 1.18    |
-| Auth             | Clerk (`@clerk/react`) | 6       |
-| Database         | Convex                 | 1.41    |
-| State Management | Zustand                | 5       |
-| Data Fetching    | TanStack React Query   | 5       |
-| Date Handling    | dayjs                  | 1.11    |
-| Linting          | ESLint                 | 9       |
-| Formatting       | Prettier               | 3.8     |
+| Category         | Technology           | Version |
+| ---------------- | -------------------- | ------- |
+| Framework        | React                | 19      |
+| Language         | TypeScript           | ~6      |
+| Bundler          | Vite                 | 8       |
+| PWA              | vite-plugin-pwa      | 1       |
+| Routing          | React Router         | 7       |
+| Styling          | Tailwind CSS         | 4       |
+| UI Components    | shadcn (radix-nova)  | 4       |
+| Icons            | Lucide React         | 1.18    |
+| Database         | Convex               | 1.41    |
+| State Management | Zustand              | 5       |
+| Data Fetching    | TanStack React Query | 5       |
+| Date Handling    | dayjs                | 1.11    |
+| Linting          | ESLint               | 9       |
+| Formatting       | Prettier             | 3.8     |
 
 ## Important links and notes
 
@@ -43,9 +42,6 @@ Always use this links as up to date reference on how to do something with each t
 Convex docs url: https://docs.convex.dev/home
 
 - docs give best practices and how to use convex
-- For db convex must be used along with clerk auth. In official documentation of the convex it says how to implement clerk, react, vite and convex
-
-Clerk docs url: https://clerk.com/docs/react/getting-started/quickstart
 
 - Again reference convex docs to make auth with db and convex api layer
 
@@ -199,7 +195,6 @@ Examples
 - only create a new utility/component when no suitable existing one exists or extending one would cause coupling or regression
 - always import project files with alias import `@/` never with relative or absolute paths
 - for any new component you are adding from shadcn please do the official command to add component from shadcn instead of just making it by yourself
-- `src/context/ConvexClerkProvider.tsx` is the canonical Convex + Clerk provider wrapper and should be reused from `src/main.tsx`
 - Pages should remain focused on layout, structure, and page-specific concerns. Avoid placing general component logic in pages—if a component can encapsulate its own behavior, that logic should live within the component. Treat pages primarily as composition layers that assemble and organize components.
 - don't use Date.now() in:
   - react hooks, instead use dayjs().valueOf()

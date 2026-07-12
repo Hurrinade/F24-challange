@@ -21,7 +21,7 @@ export default defineConfig({
         name: "React Template",
         short_name: "Template",
         description:
-          "Reusable React, Vite, Clerk, Convex, and shadcn template for future company projects.",
+          "Reusable React, Vite, Convex, and shadcn template for future company projects.",
         theme_color: "#f6f1e8",
         background_color: "#f6f1e8",
         display: "standalone",
