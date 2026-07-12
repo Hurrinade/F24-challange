@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { useModal } from "@/hooks/modals/use-modal";
 import { cn } from "@/lib/utils";
 import { ROOT_FOLDER_ENTRIES_KEY, useFileBrowserStore } from "@/stores";
+import { getErrorMessage } from "@/utils";
 import type { Id } from "@convex/_generated/dataModel";
 import type {
   AcceptedUploadMimeType,
@@ -24,10 +25,6 @@ const acceptedUploadMimeTypes: AcceptedUploadMimeType[] = [
   "text/plain",
 ];
 const maxUploadFileSizeInBytes = 5 * 1024 * 1024;
-
-function getErrorMessage(error: unknown) {
-  return error instanceof Error ? error.message : "Something went wrong.";
-}
 
 function isAcceptedUploadFile(file: File) {
   return acceptedUploadMimeTypes.includes(file.type as AcceptedUploadMimeType);

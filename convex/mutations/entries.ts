@@ -1,4 +1,4 @@
-import { v } from "convex/values";
+import { ConvexError, v } from "convex/values";
 import {
   customCtx,
   customMutation,
@@ -31,7 +31,9 @@ async function assertUniqueSiblingName(
     .unique();
 
   if (existingEntry) {
-    throw new Error("An entry with this name already exists in this folder.");
+    throw new ConvexError(
+      "An entry with this name already exists in this folder.",
+    );
   }
 }
 
@@ -69,15 +71,15 @@ export const createFile = mutation({
 
     try {
       if (!acceptedFileMimeTypes.has(args.mimeType)) {
-        throw new Error("Only PDF and text files are supported.");
+        throw new ConvexError("Only PDF and text files are supported.");
       }
 
       if (args.size < 0) {
-        throw new Error("File size is invalid.");
+        throw new ConvexError("File size is invalid.");
       }
 
       if (args.size > maxFileSizeInBytes) {
-        throw new Error("Files must be 5 MB or smaller.");
+        throw new ConvexError("Files must be 5 MB or smaller.");
       }
 
       const entryId = await createEntry(ctx, {
@@ -116,7 +118,7 @@ export const deleteEntry = mutation({
     const entry = await ctx.db.get(args.entryId);
 
     if (!entry) {
-      throw new Error("Entry not found.");
+      throw new ConvexError("Entry not found.");
     }
 
     await ctx.db.delete(args.entryId);

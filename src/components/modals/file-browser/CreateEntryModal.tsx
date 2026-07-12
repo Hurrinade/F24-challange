@@ -9,6 +9,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
+import { getErrorMessage } from "@/utils";
 import type { CreateEntryModalPayload } from "@/types";
 
 type CreateEntryModalProps = {
@@ -16,10 +17,6 @@ type CreateEntryModalProps = {
   onOpenChange: (open: boolean) => void;
   payload: CreateEntryModalPayload;
 };
-
-function getErrorMessage(error: unknown) {
-  return error instanceof Error ? error.message : "Something went wrong.";
-}
 
 export default function CreateEntryModal({
   open,
