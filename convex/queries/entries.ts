@@ -38,6 +38,17 @@ export const listChildren = query({
   },
 });
 
+export const listFolders = query({
+  args: {
+    parentId: entryParentIdValidator,
+  },
+  handler: async (ctx, args) => {
+    await validateParentFolder(ctx, args.parentId);
+
+    return await listEntriesByKind(ctx, args.parentId, "folder");
+  },
+});
+
 export const getFolder = query({
   args: {
     folderId: v.id("entries"),

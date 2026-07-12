@@ -5,6 +5,7 @@ function App() {
   return (
     <Routes>
       <Route path="/" element={<Root />} />
+      <Route path="/folders/:folderId" element={<Root />} />
     </Routes>
   );
 }
