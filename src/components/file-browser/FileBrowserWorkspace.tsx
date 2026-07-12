@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { useNavigate, useParams, useSearchParams } from "react-router";
+import { useParams, useSearchParams } from "react-router";
 import { useConvex, useMutation, useQuery } from "convex/react";
 import { FolderPlus, Upload } from "lucide-react";
 import { toast } from "sonner";
@@ -50,14 +50,9 @@ function getUploadResponse(value: { storageId: Id<"_storage"> } | undefined): {
   throw new Error("Upload response is invalid.");
 }
 
-function getFolderPath(parentId: Id<"entries"> | null) {
-  return parentId == null ? "/" : `/folders/${parentId}`;
-}
-
 export default function FileBrowserWorkspace() {
   const { folderId } = useParams<{ folderId?: string }>();
   const currentFolderId = (folderId ?? null) as Id<"entries"> | null;
-  const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const { openModal } = useModal();
   const convex = useConvex();
@@ -262,16 +257,6 @@ export default function FileBrowserWorkspace() {
     fileInputRef.current?.click();
   };
 
-  const selectFile = (file: FileSearchSuggestion) => {
-    const nextSearchParams = new URLSearchParams({
-      selectedFile: file._id,
-    });
-
-    setSearchValue("");
-    setSubmittedSearchPrefix("");
-    navigate(`${getFolderPath(file.parentId)}?${nextSearchParams.toString()}`);
-  };
-
   const submitSearch = (value: string) => {
     const trimmedValue = value.trim();
 
@@ -407,7 +392,9 @@ export default function FileBrowserWorkspace() {
             onSearchScopeChange={setSearchScope}
             onSearchSubmit={submitSearch}
             onSearchClear={clearSearch}
-            onSelectFile={selectFile}
+            onOpenFile={(file: FileSearchSuggestion) => {
+              void openFile(file);
+            }}
           />
           <Button
             type="button"
