@@ -1,4 +1,5 @@
 import { FolderRoot } from "lucide-react";
+import FileBrowserFolderTree from "@/components/file-browser/FileBrowserFolderTree";
 import {
   Sidebar,
   SidebarContent,
@@ -29,9 +30,7 @@ export default function FileBrowserSidebar() {
         <SidebarGroup>
           <SidebarGroupLabel>Folders</SidebarGroupLabel>
           <SidebarGroupContent>
-            <p className="px-2 py-3 text-sm leading-5 text-muted-foreground">
-              No folders yet.
-            </p>
+            <FileBrowserFolderTree />
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
