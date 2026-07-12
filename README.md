@@ -1,123 +1,68 @@
-# React Vite Template
+# File Browser
 
-This template is the starting point for future company projects built with
-React, Vite, Convex, TanStack Query, Tailwind CSS 4, and shadcn UI.
+File Browser is a small, unauthenticated Dropbox-style file system built with
+React, TypeScript, Vite, Convex, Tailwind CSS, and shadcn UI.
 
-## What is included
+PR 1 provides the desktop application shell. File and folder persistence,
+browsing, deletion, and search will be added in later PRs.
 
-- React 19 + Vite 8 + TypeScript 6
-- Convex client wiring
-- TanStack Query provider setup
-- Vite-native PWA baseline via `vite-plugin-pwa`
-- Global modal host with a confirmation modal example
-- Warm light and dark semantic theme tokens in `src/index.css`
-- Route, hook, type, and component structure examples for future projects
+## Current interface
+
+- `/` renders the File Browser workspace.
+- The left folder sidebar starts at 20% width and can be resized between 15% and
+  35%.
+- The main file area uses the remaining width.
+- The existing light, dark, and system theme preferences remain available.
+- There are no accounts, sessions, protected routes, or user-specific data.
 
 ## Setup
 
 1. Install dependencies:
 
 ```bash
-bun install
+npm install
 ```
 
-2. Create your local environment file from `.env.example`.
+2. Create `.env.local` from `.env.example` and set:
 
-Required frontend env keys:
+```dotenv
+VITE_CONVEX_URL=https://your-deployment.convex.cloud
+```
 
-- `VITE_CONVEX_URL`: Convex client URL for the current deployment
+`CONVEX_DEPLOYMENT` is optional and is only used by Convex tooling.
 
-Optional local workflow key:
-
-- `CONVEX_DEPLOYMENT`: helpful for Convex local tooling such as `npx convex dev`
-
-3. Verify the project:
+3. Run the frontend in debug mode when developing locally:
 
 ```bash
-bun run check
+npm run dev
 ```
 
-4. Build the production bundle when needed:
+## Quality commands
 
 ```bash
-bun run build
+npm run lint
+npm run lint:fix
+npm run typecheck
+npm run format
+npm run format:check
+npm run check
+npm run build
 ```
 
-## PWA Baseline
-
-- The template ships with a generated `manifest.webmanifest` and service worker
-  through `vite-plugin-pwa`.
-- Placeholder favicon and install icon assets live in `public/` and should be
-  replaced for each real project.
-- This baseline is intentionally minimal: there is no custom install prompt,
-  update prompt, or offline-specific UI yet.
-- Production deployments should serve the app over HTTPS and serve
-  `manifest.webmanifest` with the correct MIME type.
-
-## Quality Commands
-
-```bash
-bun run lint
-bun run lint:fix
-bun run typecheck
-bun run format
-bun run format:check
-bun run check
-```
-
-`bun run check` is non-mutating. It runs linting, typechecking, and Prettier in
+`npm run check` is non-mutating. It runs ESLint, TypeScript, and Prettier in
 check mode.
 
-## Current Routes
+## Project structure
 
-- `/`: shared root page example in `src/pages/Root.tsx`
-- `/home`: authenticated example page in `src/pages/authenticated/home/Home.tsx`
-- `/settings`: authenticated account settings page in `src/pages/authenticated/settings/Settings.tsx`
-- `/public`: unauthenticated example page in `src/pages/unauthenticated/public/Public.tsx`
+- Route pages live in `src/pages`; `/` remains `src/pages/Root.tsx`.
+- Feature components live under matching folders in `src/components`.
+- Shared hooks, stores, utilities, components, and types are exposed through
+  their root barrel files when needed.
+- Convex schema and server functions live in `convex`.
+- Project imports use the `@/` alias.
 
-## Adding New Pages
+## Current scope
 
-- Keep `/` as the special root file in `src/pages/Root.tsx`.
-- Put authenticated routes under `src/pages/authenticated/...`.
-- Put unauthenticated routes under `src/pages/unauthenticated/...`.
-- Mirror nested route segments with kebab-case folders.
-- Name page files in PascalCase.
-
-Examples:
-
-- `/dashboard` → `src/pages/authenticated/dashboard/Dashboard.tsx`
-- `/home/home-detail` → `src/pages/authenticated/home/home-detail/HomeDetail.tsx`
-- `/public` → `src/pages/unauthenticated/public/Public.tsx`
-
-## Hooks, Types, and Modals
-
-- Route-scoped hooks should live in matching folders like
-  `src/hooks/home/use-home.ts`.
-- Route-scoped types should live in matching folders like
-  `src/types/home/home.types.ts`.
-- Shared modal components should live under `src/components/modals/...`.
-- Register global modal entries in `src/context/ModalProvider.tsx`.
-
-## Import Policy
-
-- Prefer direct imports from the concrete module path, for example
-  `@/hooks/home/use-home` or `@/components/ui/button`.
-- Keep root barrel files only for intentionally shared public entry points.
-- When adding new files, update a root barrel only if that module is meant to be
-  a shared template-level export.
-
-## Provider Pattern
-
-- `src/main.tsx` should compose app-level providers using that wrapper instead of
-  duplicating the Convex provider setup inline.
-
-### Commands to check package.json versions
-
-```bash
-# Lists latest versions
-npx npm-check-updates
-
-# Applies versions to package.json
-npx npm-check-updates -u
-
-```
+This PR intentionally contains no database schema or file-system behavior. The
+ignored local `plan.md` documents the later PR sequence for CRUD, navigation,
+search, delivery documentation, and optional Docker support.

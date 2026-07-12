@@ -8,9 +8,9 @@ script = ""
 [[actions]]
 name = "Run"
 icon = "run"
-command = "bun run dev"
+command = "npm run dev"
 
 [[actions]]
 name = "Format"
 icon = "tool"
-command = "bun run format"
+command = "npm run format"
