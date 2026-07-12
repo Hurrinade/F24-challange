@@ -216,17 +216,27 @@ export default function FileBrowserWorkspace() {
 
     setIsUploading(true);
 
-    let uploadedCount = 0;
-
     try {
-      for (const file of acceptedFiles) {
-        try {
-          await uploadSingleFile(file);
-          uploadedCount += 1;
-        } catch (error) {
-          toast.error(`${file.name}: ${getErrorMessage(error)}`);
-        }
-      }
+      const uploadResults = await Promise.all(
+        acceptedFiles.map(async (file) => {
+          try {
+            await uploadSingleFile(file);
+            return { file, isUploaded: true };
+          } catch (error) {
+            return { file, isUploaded: false, error };
+          }
+        }),
+      );
+
+      const uploadedCount = uploadResults.filter(
+        (result) => result.isUploaded,
+      ).length;
+
+      uploadResults
+        .filter((result) => !result.isUploaded)
+        .forEach((result) => {
+          toast.error(`${result.file.name}: ${getErrorMessage(result.error)}`);
+        });
 
       if (uploadedCount > 0) {
         toast.success(
