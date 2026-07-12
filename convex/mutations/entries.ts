@@ -16,6 +16,7 @@ import type { MutationCtx } from "../_generated/server";
 
 const mutation = customMutation(rawMutation, customCtx(entryTriggers.wrapDB));
 const acceptedFileMimeTypes = new Set(["application/pdf", "text/plain"]);
+const maxFileSizeInBytes = 5 * 1024 * 1024;
 
 async function assertUniqueSiblingName(
   ctx: MutationCtx,
@@ -73,6 +74,10 @@ export const createFile = mutation({
 
       if (args.size < 0) {
         throw new Error("File size is invalid.");
+      }
+
+      if (args.size > maxFileSizeInBytes) {
+        throw new Error("Files must be 5 MB or smaller.");
       }
 
       const entryId = await createEntry(ctx, {

@@ -153,6 +153,7 @@ export const getBreadcrumbs = query({
   },
 });
 
+// Get file url from convex file storage
 export const getFileUrl = query({
   args: {
     entryId: v.id("entries"),

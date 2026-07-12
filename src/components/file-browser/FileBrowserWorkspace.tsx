@@ -24,6 +24,7 @@ const acceptedUploadMimeTypes: AcceptedUploadMimeType[] = [
   "application/pdf",
   "text/plain",
 ];
+const maxUploadFileSizeInBytes = 5 * 1024 * 1024;
 
 function getErrorMessage(error: unknown) {
   return error instanceof Error ? error.message : "Something went wrong.";
@@ -31,6 +32,10 @@ function getErrorMessage(error: unknown) {
 
 function isAcceptedUploadFile(file: File) {
   return acceptedUploadMimeTypes.includes(file.type as AcceptedUploadMimeType);
+}
+
+function isAllowedUploadFileSize(file: File) {
+  return file.size <= maxUploadFileSizeInBytes;
 }
 
 function hasDraggedFiles(event: React.DragEvent<HTMLElement>) {
@@ -201,12 +206,21 @@ export default function FileBrowserWorkspace() {
       return;
     }
 
-    const acceptedFiles = files.filter(isAcceptedUploadFile);
-    const skippedCount = files.length - acceptedFiles.length;
+    const acceptedTypeFiles = files.filter(isAcceptedUploadFile);
+    const unsupportedTypeCount = files.length - acceptedTypeFiles.length;
 
-    if (skippedCount > 0) {
+    if (unsupportedTypeCount > 0) {
       toast.error(
-        `${skippedCount} file${skippedCount === 1 ? "" : "s"} skipped. Only PDF and text files are supported.`,
+        `${unsupportedTypeCount} file${unsupportedTypeCount === 1 ? "" : "s"} skipped. Only PDF and text files are supported.`,
+      );
+    }
+
+    const acceptedFiles = acceptedTypeFiles.filter(isAllowedUploadFileSize);
+    const oversizedCount = acceptedTypeFiles.length - acceptedFiles.length;
+
+    if (oversizedCount > 0) {
+      toast.error(
+        `${oversizedCount} file${oversizedCount === 1 ? "" : "s"} skipped. Files must be 5 MB or smaller.`,
       );
     }
 
@@ -276,6 +290,7 @@ export default function FileBrowserWorkspace() {
     setSearchParams({});
   };
 
+  // To open file in another tab
   const openFile = async (entry: EntryListItem) => {
     if (!entry.storageId) {
       toast.error("This file has no uploaded content.");
