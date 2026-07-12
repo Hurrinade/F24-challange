@@ -4,7 +4,6 @@ import { useConvex, useMutation, useQuery } from "convex/react";
 import { FolderPlus, Upload } from "lucide-react";
 import { toast } from "sonner";
 import { api } from "@convex/_generated/api";
-import { ThemeToggle } from "@/components";
 import FileBrowserBreadcrumbs from "@/components/file-browser/FileBrowserBreadcrumbs";
 import FileBrowserEntryList from "@/components/file-browser/FileBrowserEntryList";
 import FileBrowserSearch from "@/components/file-browser/FileBrowserSearch";
@@ -385,16 +384,17 @@ export default function FileBrowserWorkspace() {
         />
       )}
 
-      <header className="flex min-h-16 items-center justify-between gap-4 border-b border-border px-6 py-3">
-        <div className="min-w-0 space-y-1">
+      <header className="flex min-h-16 flex-wrap items-center justify-between gap-3 border-b border-border px-4 py-3 md:px-6">
+        <div className="min-w-0 flex-1 space-y-1">
           <FileBrowserBreadcrumbs breadcrumbs={visibleBreadcrumbs} />
           <h1 className="truncate text-lg font-semibold">
             {currentFolderName}
           </h1>
         </div>
 
-        <div className="flex shrink-0 items-center gap-2">
+        <div className="flex min-w-0 flex-1 flex-wrap items-center justify-end gap-2">
           <FileBrowserSearch
+            className="min-w-64 basis-80 md:max-w-xl"
             currentFolderId={currentFolderId}
             searchValue={searchValue}
             searchScope={searchScope}
@@ -415,6 +415,8 @@ export default function FileBrowserWorkspace() {
           <Button
             type="button"
             variant="outline"
+            size="sm"
+            className="min-w-30"
             onClick={openCreateFolderModal}
           >
             <FolderPlus aria-hidden="true" className="size-4" />
@@ -423,13 +425,14 @@ export default function FileBrowserWorkspace() {
           <Button
             type="button"
             variant="outline"
+            size="sm"
+            className="min-w-30"
             onClick={openUploadPicker}
             disabled={isUploading}
           >
             <Upload aria-hidden="true" className="size-4" />
             {isUploading ? "Uploading..." : "Upload files"}
           </Button>
-          <ThemeToggle />
         </div>
       </header>
 

@@ -3,8 +3,8 @@ import type { ResolvedTheme, ThemePreference, ThemeSnapshot } from "@/types";
 const THEME_STORAGE_KEY = "theme";
 const SYSTEM_THEME_QUERY = "(prefers-color-scheme: dark)";
 const THEME_COLORS: Record<ResolvedTheme, string> = {
-  light: "#f6f1e8",
-  dark: "#171311",
+  light: "#f8fafc",
+  dark: "#0f1115",
 };
 
 const listeners = new Set<() => void>();

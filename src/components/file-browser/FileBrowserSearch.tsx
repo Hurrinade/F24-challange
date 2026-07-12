@@ -24,6 +24,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useDebounce } from "@/hooks";
+import { cn } from "@/lib/utils";
 import type { Id } from "@convex/_generated/dataModel";
 import type { FileSearchSuggestion, SearchScope } from "@/types";
 
@@ -39,6 +40,7 @@ type FileBrowserSearchProps = {
   onSearchSubmit: (value: string) => void;
   onSearchClear: () => void;
   onSelectFile: (file: FileSearchSuggestion) => void;
+  className?: string;
 };
 
 export default function FileBrowserSearch({
@@ -51,6 +53,7 @@ export default function FileBrowserSearch({
   onSearchSubmit,
   onSearchClear,
   onSelectFile,
+  className,
 }: FileBrowserSearchProps) {
   const formRef = useRef<HTMLFormElement | null>(null);
   const [isSuggestionsOpen, setIsSuggestionsOpen] = useState(false);
@@ -89,7 +92,7 @@ export default function FileBrowserSearch({
       <PopoverAnchor asChild>
         <form
           ref={formRef}
-          className="flex min-w-80 items-center gap-2"
+          className={cn("flex min-w-0 flex-1 items-center gap-2", className)}
           onSubmit={handleSubmit}
         >
           <div className="relative min-w-0 flex-1">
@@ -138,7 +141,7 @@ export default function FileBrowserSearch({
               setIsSuggestionsOpen(canSearch);
             }}
           >
-            <SelectTrigger size="sm" className="w-32">
+            <SelectTrigger size="sm" className="w-28">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
