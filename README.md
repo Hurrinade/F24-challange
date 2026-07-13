@@ -12,9 +12,13 @@ typing.
 
 - Node.js 20 or newer.
 - npm.
-- A Convex project.
+- Docker, only if you want to run the development container.
 - A static frontend host for production, such as Vercel, Netlify, Cloudflare
   Pages, or any static server with SPA fallback support.
+
+Reviewers do not need Convex account access for the default setup. The app uses
+the shared deployed Convex backend configured in `.env.example` and the
+Dockerfile.
 
 Install dependencies:
 
@@ -32,6 +36,10 @@ VITE_CONVEX_URL=https://enduring-cardinal-769.eu-west-1.convex.cloud
 
 `VITE_CONVEX_URL` is required by the browser app and points to the shared Convex
 deployment used for this interview project.
+
+If you want to run against your own Convex project instead of the shared
+interview backend, create a Convex project, deploy the functions in `convex/`,
+and replace `VITE_CONVEX_URL` with your own Convex client URL.
 
 ## Debug-mode development
 
@@ -75,10 +83,11 @@ npm run dev
 Then run the VS Code `Debug Vite app` profile. It opens
 `http://localhost:5173` and maps browser source files to `src`.
 
-## Optional Docker
+## Optional development Docker
 
-Docker is optional. Convex is not containerized; the Docker setup runs the Vite
-development server with the shared interview Convex deployment at
+Docker is optional and development-only in this project. Convex is not
+containerized; the Docker setup runs the Vite development server with the shared
+interview Convex deployment at
 `https://enduring-cardinal-769.eu-west-1.convex.cloud`.
 
 Build and run directly:
@@ -98,7 +107,9 @@ Open the containerized app at `http://localhost:5173`.
 
 The Dockerfile includes the shared interview Convex URL by default. The Compose
 service mounts the project into the container so local source edits are visible
-to Vite without rebuilding the image.
+to Vite without rebuilding the image. Vite file watching is configured in
+`vite.config.ts` with polling so hot reload works reliably through the Docker
+bind mount.
 
 ## Convex data model
 
@@ -120,6 +131,7 @@ virtual and is never stored as an entry.
 - Folder creation validates names and rejects invalid or duplicate siblings.
 - File creation is handled through real uploads. Upload accepts only
   `application/pdf` and `text/plain`.
+- Uploaded files must be 5 MB or smaller.
 - Empty folders show a visible drop zone.
 - Non-empty folders still accept drag-and-drop across the workspace.
 - Deleting a folder deletes its descendants.
